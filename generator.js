@@ -53,7 +53,7 @@ function getValuesThenGenerateData(variable, max){
 			getValuesThenGenerateData('updates','positive infinity');
 		}else if (variable=='updates') {
 			numOfUpdates=num;
-			console.log('Creating numOfDevices= '+numOfDevices+' numOfUsers= '+numOfUsers+' numOfUpdates= '+numOfUpdates+' ...');
+			console.log('Creating numOfDevices= '+numOfDevices+' numOfUsers= '+numOfUsers+' numOfUpdates= '+numOfUpdates+' Please wait...');
 			generateData(numOfDevices,numOfUsers,numOfUpdates);
 		}
 	});
@@ -99,6 +99,8 @@ function generateData(numOfDevices,numOfUsers,numOfUpdates){
 	    		if(j == (numOfUpdates-1)){ // last update for this device
 	    			device.lastUpdateLocation = update.location;
 	    			device.totalMileage = update.totalMileage;
+	    			device.lastSpeed = update.speed;
+	    			device.lastDirection = update.direction;
 	    		}
 			}
 	    	
