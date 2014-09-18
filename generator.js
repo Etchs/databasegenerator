@@ -39,18 +39,21 @@ function getValuesThenGenerateData(variable, max){
 		if (isNaN(num)) {
 		    console.log('This is not number, try again');
 		    getValuesThenGenerateData(variable,max);
+		}else if (variable=='devices' && num>99) {
+			console.log('The number of devices cannot exceed 99, try again');
+			getValuesThenGenerateData('devices',99);
 		}else if (variable=='devices') {
 			numOfDevices = num;
 			getValuesThenGenerateData('users',numOfDevices);
 		}else if (variable=='users' && num>numOfDevices) {
-			console.log('The number of user cannot exceed '+numOfDevices+' try again');
+			console.log('The number of users cannot exceed '+numOfDevices+' try again');
 			getValuesThenGenerateData('users',numOfDevices);
 		}else if(variable=='users'){
 			numOfUsers = num;
 			getValuesThenGenerateData('updates','positive infinity');
 		}else if (variable=='updates') {
 			numOfUpdates=num;
-			console.log('numOfDevices= '+numOfDevices+' numOfUsers= '+numOfUsers+' numOfUpdates= '+numOfUpdates);
+			console.log('Creating numOfDevices= '+numOfDevices+' numOfUsers= '+numOfUsers+' numOfUpdates= '+numOfUpdates+' ...');
 			generateData(numOfDevices,numOfUsers,numOfUpdates);
 		}
 	});
@@ -132,6 +135,24 @@ function generateData(numOfDevices,numOfUsers,numOfUpdates){
 	            if(err) throw err;
 	        });
 		}
-	    
+		console.log('Finished the creation of '+numOfDevices+' devices for '+numOfUsers+' users and '+numOfUpdates+' update per device');
+		
+		db.stats({scale:1024},function(err, dbStats) {
+			var statistics={
+					'db name':dbStats.db,
+					'no of indexes' : dbStats.indexes,
+					'no of collections': dbStats.collections,
+					'no of objects in db': dbStats.objects,
+					'size of data held in the db (datasize)': dbStats.dataSize + ' Kilobytes (including the padding factor)',
+					'document average size' : dbStats.avgObjSize + ' bytes (The datasize divided by the no of documents)',
+					'storage size': dbStats.storageSize + ' Kilobytes (total space allocated to collections in database for document storage)',
+					'indexes size': dbStats.indexSize + ' Kilobytes (The total size of all indexes created on this database)',
+					'size of data files that hold the database': dbStats.fileSize +' Kilobytes ( includes preallocated space and the padding factor)',
+					'size of the namespace files (i.e. that end with .ns)': dbStats.nsSizeMB+' Megabytes'
+			};
+			console.dir(statistics);
+			db.close();
+			process.exit();
+		});
 	});
 }
