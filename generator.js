@@ -60,8 +60,8 @@ function getValuesThenGenerateData(variable, max){
 }
 
 function generateData(numOfDevices,numOfUsers,numOfUpdates){
-	var deviceStartTime = new Date(2014,9,17,6,33,30); // sets the start time of 'deviceTime' attribute in the updates collection
-	var serverStartTime = new Date(2014,9,17,8,33,30); // sets the start time of 'serverTime' attribute in the updates collection
+	var deviceTime = new Date('2014-09-17T06:00:00.000Z'); // sets the start time of 'deviceTime' attribute in the updates collection
+	var serverTime = new Date('2014-09-17T08:00:00.000Z'); // sets the start time of 'serverTime' attribute in the updates collection
 	
 	var deviceIds = []; // an array to contain IMEI numbers for all devices
 	for (var i = 0; i < numOfDevices; i++) {
@@ -85,8 +85,12 @@ function generateData(numOfDevices,numOfUsers,numOfUpdates){
 	    	for (var j = 0; j < numOfUpdates; j++) { // generate & insert a new update for that device
 	    		var update = {deviceIMEI:deviceIds[i]};
 	    		update.updateType = 'gps';
-	    		update.deviceTime = deviceStartTime.setSeconds(deviceStartTime.getSeconds() + j*30);
-	    		update.serverTime = serverStartTime.setSeconds(serverStartTime.getSeconds() + j*30);
+	    		var deviceTime = new Date('2014-09-17T06:00:00.000Z'); // sets the start time of 'deviceTime' attribute in the updates collection
+	    		var serverTime = new Date('2014-09-17T08:00:00.000Z'); // sets the start time of 'serverTime' attribute in the updates collection	    		
+	    		deviceTime.setSeconds(j*30);
+	    		serverTime.setSeconds(j*30);
+	    		update.deviceTime = deviceTime;
+	    		update.serverTime = serverTime;
 	    		update.location =  locationsArray[j%locationsArray.length];
 	    		update.speed = Math.floor((Math.random() * 100) + 1);
 	    		update.direction = Math.floor(Math.random() * 360);
