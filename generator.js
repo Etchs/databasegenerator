@@ -33,36 +33,57 @@ input.on('end', function() {
 	}
 });
 
-var prompts = rl.createInterface(process.stdin, process.stdout);
-function getValuesThenGenerateData(variable, max){
-	prompts.question('Enter a number of '+variable+' from 1 to '+max+': ', function(num){
-		if (isNaN(num)) {
-		    console.log('This is not number, try again');
-		    getValuesThenGenerateData(variable,max);
-		}else if (variable=='devices' && num>99) {
-			console.log('The number of devices cannot exceed 99, try again');
-			getValuesThenGenerateData('devices',99);
-		}else if (variable=='devices') {
-			numOfDevices = num;
-			getValuesThenGenerateData('users',numOfDevices);
-		}else if (variable=='users' && num>numOfDevices) {
-			console.log('The number of users cannot exceed '+numOfDevices+' try again');
-			getValuesThenGenerateData('users',numOfDevices);
-		}else if(variable=='users'){
-			numOfUsers = num;
-			getValuesThenGenerateData('updates','positive infinity');
-		}else if (variable=='updates') {
-			numOfUpdates=num;
-			console.log('Creating numOfDevices= '+numOfDevices+' numOfUsers= '+numOfUsers+' numOfUpdates= '+numOfUpdates+' Please wait...');
-			generateData(numOfDevices,numOfUsers,numOfUpdates);
-		}
-	});
+
+function generateGeofences(){
+	var geofences = [
+	                    {
+	                    	name: 'geofence1',
+	                    	polygon: {
+	                    		type: 'Polygon',
+	                    		coordinates: [[ [30.07135,31.29188],
+	                    		                [30.06889,31.29023],
+	                    		                [30.06829,31.29352],
+	                    		                [30.07019,31.29426],
+	                    		                [30.07135,31.29188] ]]
+	                    	},
+	                    	remark: 'remark 1',
+	                    	lastUpdateGeofenceFlag: false
+	                    },
+	                    {
+	                    	name: 'geofence2',
+	                    	polygon: {
+	                    		type: 'Polygon',
+	                    		coordinates: [[ [30.07966,31.30513],
+	                    		                [30.07272,31.30775],
+	                    		                [30.07606,31.31732],
+	                    		                [30.08249,31.32076],
+	                    		                [30.08349,31.31243],
+	                    		                [30.07966,31.30513] ]]
+	                    	},
+	                    	remark: 'remark 2',
+	                    	lastUpdateGeofenceFlag: false
+	                    },
+	                    {
+	                    	name: 'geofence3',
+	                    	polygon: {
+	                    		type: 'Polygon',
+	                    		coordinates: [[ [30.08742,31.32084],
+	                    		                [30.08341,31.32672],
+	                    		                [30.08471,31.33513],
+	                    		                [30.0901,31.3405],
+	                    		                [30.0953,31.33887],
+	                    		                [30.09344,31.32801],
+	                    		                [30.08742,31.32084] ]]
+	                    	},
+	                    	remark: 'remark 3',
+	                    	lastUpdateGeofenceFlag: false
+	                    }
+	                 ];
+	             
+	return geofences;
 }
 
 function generateData(numOfDevices,numOfUsers,numOfUpdates){
-	var deviceTime = new Date('2014-09-17T06:00:00.000Z'); // sets the start time of 'deviceTime' attribute in the updates collection
-	var serverTime = new Date('2014-09-17T08:00:00.000Z'); // sets the start time of 'serverTime' attribute in the updates collection
-	
 	var deviceIds = []; // an array to contain IMEI numbers for all devices
 	for (var i = 0; i < numOfDevices; i++) {
 		var deviceIMEI = '03588990502463' + ( i<10? '0'+i : i);
@@ -81,6 +102,11 @@ function generateData(numOfDevices,numOfUsers,numOfUpdates){
 	    	device.licensePlate = 'TRK00'+i;
 	    	device.fuelConsumption100KM = 20;
 	    	device.overspeed = 80;
+	    	device.geofences = generateGeofences();
+	    	device.totalMileage = 0.0;
+	    	device.offlineFlag = true;
+	    	//device.stopDetailTimerFlag = false;
+	    	device.geofenceAlarmsArraySize = 0;
 	    	
 	    	for (var j = 0; j < numOfUpdates; j++) { // generate & insert a new update for that device
 	    		var update = {deviceIMEI:deviceIds[i]};
@@ -103,8 +129,8 @@ function generateData(numOfDevices,numOfUsers,numOfUpdates){
 	    		if(j == (numOfUpdates-1)){ // last update for this device
 	    			device.lastUpdateLocation = update.location;
 	    			device.totalMileage = update.totalMileage;
-	    			device.lastSpeed = update.speed;
-	    			device.lastDirection = update.direction;
+	    			device.lastUpdateSpeed = update.speed;
+	    			device.lastUpdateDirection = update.direction;
 	    		}
 			}
 	    	
@@ -160,5 +186,31 @@ function generateData(numOfDevices,numOfUsers,numOfUpdates){
 			db.close();
 			process.exit();
 		});
+	});
+}
+
+var prompts = rl.createInterface(process.stdin, process.stdout);
+function getValuesThenGenerateData(variable, max){
+	prompts.question('Enter a number of '+variable+' from 1 to '+max+': ', function(num){
+		if (isNaN(parseInt(num))) {
+		    console.log('This is not number, try again');
+		    getValuesThenGenerateData(variable,max);
+		}else if (variable=='devices' && parseInt(num)>99) {
+			console.log('The number of devices cannot exceed 99, try again');
+			getValuesThenGenerateData('devices',99);
+		}else if (variable=='devices') {
+			numOfDevices = parseInt(num);
+			getValuesThenGenerateData('users',numOfDevices);
+		}else if (variable=='users' && parseInt(num)>numOfDevices) {
+			console.log('The number of users cannot exceed '+numOfDevices+' try again');
+			getValuesThenGenerateData('users',numOfDevices);
+		}else if(variable=='users'){
+			numOfUsers = parseInt(num);
+			getValuesThenGenerateData('updates','positive infinity');
+		}else if (variable=='updates') {
+			numOfUpdates = parseInt(num);
+			console.log('Creating numOfDevices= '+numOfDevices+' numOfUsers= '+numOfUsers+' numOfUpdates= '+numOfUpdates+' Please wait...');
+			generateData(numOfDevices,numOfUsers,numOfUpdates);
+		}
 	});
 }
