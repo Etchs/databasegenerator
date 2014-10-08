@@ -94,6 +94,7 @@ function generateData(numOfDevices,numOfUsers,numOfUpdates){
 	    if(err) throw err;
 	    db.dropDatabase();
 	    
+	    var noOfDevicesInserted = 0;
 	    for (var i = 0; i < numOfDevices; i++) { // generate & insert a new device
 	    	var device = {_id:deviceIds[i]};
 	    	device.type = 'TR02';
@@ -136,56 +137,87 @@ function generateData(numOfDevices,numOfUsers,numOfUpdates){
 	    	
 	    	db.collection('devices').insert(device, function(err, inserted) {
 	            if(err) throw err;
+	            noOfDevicesInserted++;
+	            if(noOfDevicesInserted == numOfDevices){ // last device was successfully inserted
+		    		var reminder = numOfDevices%numOfUsers;
+		    		var start = 0;
+		    		for (var k = 0; k < numOfUsers; k++) { // generate & insert a new user 
+		    			var numOfDevicesUpdatedWithUsers = 0;
+		    			var end =  start + Math.floor(numOfDevices/numOfUsers);
+		    			if(reminder>0){
+		    				end += 1;
+		    				reminder--;
+		    			}
+		    			var userDevices =  deviceIds.slice(start,end);
+		    			start = end;
+		    			var user = {username:"Ahmed"+k,
+		    					accountType:"End User",
+		    					timeZone:k,
+		    					devices:userDevices,
+		    					firstName:"Ahmed"+k,
+		    					lastName:"Mohamed"+k,
+		    					password:"password"+k,
+		    					email:"email"+k,
+		    					address:"address"+k,
+		    					city:"city"+k,
+		    					country:"country"+k,
+		    					telMob:"0100000000"+k,
+		    					accountVerification: true
+		    					};
+		    			db.collection('users').insert(user, function(err, inserted) {
+		    	            if(err) throw err;
+		    	            
+		    	            for (var n = 0; n < inserted[0].devices.length; n++) {
+								var deviceIMEI = inserted[0].devices[n];
+								
+								var query = {_id:deviceIMEI};
+		    	            	
+		    	            	var newUser = {
+    	            					'user_id': inserted[0]._id,
+    	            					'userName': inserted[0].username,
+    	            					'userActivation': new Date('2014-09-10T06:00:00.000Z'),
+    	            					'userExpiration': new Date('2016-09-10T06:00:00.000Z')
+    	            				};
+		    	            	var operator = {
+		    	            			'$push': {
+		    	            				'users': newUser
+		    	            			}
+		    	            		};
+		    	            	db.collection('devices').update(query, operator, function(err, updated) {
+		    	                    if(err) throw err;
+		    	                    numOfDevicesUpdatedWithUsers++;
+		    	                    if (numOfDevicesUpdatedWithUsers == numOfDevices){
+		    	                    	db.stats({scale:1024},function(err, dbStats) {
+		    	                			var statistics={
+		    	                					'db name':dbStats.db,
+		    	                					'no of indexes' : dbStats.indexes,
+		    	                					'no of collections': dbStats.collections,
+		    	                					'no of objects in db': dbStats.objects,
+		    	                					'size of data held in the db (datasize)': dbStats.dataSize + ' Kilobytes (including the padding factor)',
+		    	                					'document average size' : dbStats.avgObjSize + ' bytes (The datasize divided by the no of documents)',
+		    	                					'storage size': dbStats.storageSize + ' Kilobytes (total space allocated to collections in database for document storage)',
+		    	                					'indexes size': dbStats.indexSize + ' Kilobytes (The total size of all indexes created on this database)',
+		    	                					'size of data files that hold the database': dbStats.fileSize +' Kilobytes ( includes preallocated space and the padding factor)',
+		    	                					'size of the namespace files (i.e. that end with .ns)': dbStats.nsSizeMB+' Megabytes'
+		    	                			};
+		    	                			console.dir(statistics);
+		    	                			db.close();
+		    	                			process.exit();
+		    	                		});
+		    	                    }
+		    	                });
+								
+							}
+		    	        });
+		    		}
+	            }
 	        });
+	    	
+	    	
 		}
 		
-		var reminder = numOfDevices%numOfUsers;
-		var start = 0;
-		for (var k = 0; k < numOfUsers; k++) { // generate & insert a new user 
-			var end =  start + Math.floor(numOfDevices/numOfUsers);
-			if(reminder>0){
-				end += 1;
-				reminder--;
-			}
-			var userDevices =  deviceIds.slice(start,end);
-			start = end;
-			var user = {username:"Ahmed"+k,
-					accountType:"End User",
-					timeZone:k,
-					devices:userDevices,
-					firstName:"Ahmed"+k,
-					lastName:"Mohamed"+k,
-					password:"password"+k,
-					email:"email"+k,
-					address:"address"+k,
-					city:"city"+k,
-					country:"country"+k,
-					telMob:"0100000000"+k,
-					accountVerification: true
-					};
-			db.collection('users').insert(user, function(err, inserted) {
-	            if(err) throw err;
-	        });
-		}
+		
 		console.log('Finished the creation of '+numOfDevices+' devices for '+numOfUsers+' users and '+numOfUpdates+' update per device');
-		
-		db.stats({scale:1024},function(err, dbStats) {
-			var statistics={
-					'db name':dbStats.db,
-					'no of indexes' : dbStats.indexes,
-					'no of collections': dbStats.collections,
-					'no of objects in db': dbStats.objects,
-					'size of data held in the db (datasize)': dbStats.dataSize + ' Kilobytes (including the padding factor)',
-					'document average size' : dbStats.avgObjSize + ' bytes (The datasize divided by the no of documents)',
-					'storage size': dbStats.storageSize + ' Kilobytes (total space allocated to collections in database for document storage)',
-					'indexes size': dbStats.indexSize + ' Kilobytes (The total size of all indexes created on this database)',
-					'size of data files that hold the database': dbStats.fileSize +' Kilobytes ( includes preallocated space and the padding factor)',
-					'size of the namespace files (i.e. that end with .ns)': dbStats.nsSizeMB+' Megabytes'
-			};
-			console.dir(statistics);
-			db.close();
-			process.exit();
-		});
 	});
 }
 
