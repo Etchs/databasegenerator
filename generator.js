@@ -105,9 +105,9 @@ function generateData(numOfDevices,numOfUsers,numOfUpdates){
 	    	device.overspeed = 80;
 	    	device.geofences = generateGeofences();
 	    	device.totalMileage = 0.0;
-	    	device.offlineFlag = true;
-	    	//device.stopDetailTimerFlag = false;
-	    	device.geofenceAlarmsArraySize = 0;
+	    	device.offlineFlag = false;
+	    	device.stopDetailTimerFlag = false;
+	    	//device.geofenceAlarmsArraySize = 0;
 	    	
 	    	for (var j = 0; j < numOfUpdates; j++) { // generate & insert a new update for that device
 	    		var update = {deviceIMEI:deviceIds[i]};
@@ -128,6 +128,7 @@ function generateData(numOfDevices,numOfUsers,numOfUpdates){
 		        });
 	    		
 	    		if(j == (numOfUpdates-1)){ // last update for this device
+	    			device.lastUpdateTime = update.serverTime;
 	    			device.lastUpdateLocation = update.location;
 	    			device.totalMileage = update.totalMileage;
 	    			device.lastUpdateSpeed = update.speed;
