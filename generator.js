@@ -112,8 +112,8 @@ function generateData(numOfDevices,numOfUsers,numOfUpdates){
 	    	for (var j = 0; j < numOfUpdates; j++) { // generate & insert a new update for that device
 	    		var update = {deviceIMEI:deviceIds[i]};
 	    		update.updateType = 'gps';
-	    		var deviceTime = new Date('2014-09-17T06:00:00.000Z'); // sets the start time of 'deviceTime' attribute in the updates collection
-	    		var serverTime = new Date('2014-09-17T08:00:00.000Z'); // sets the start time of 'serverTime' attribute in the updates collection	    		
+	    		var deviceTime = new Date('2015-02-27T06:00:00.000Z'); // sets the start time of 'deviceTime' attribute in the updates collection
+	    		var serverTime = new Date('2015-02-27T08:00:00.000Z'); // sets the start time of 'serverTime' attribute in the updates collection	    		
 	    		deviceTime.setSeconds(j*30);
 	    		serverTime.setSeconds(j*30);
 	    		update.deviceTime = deviceTime;
