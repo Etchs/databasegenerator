@@ -1,4 +1,5 @@
 var MongoClient = require('mongodb').MongoClient;
+var ObjectId = require('mongodb').ObjectID;
 var fs = require('fs');
 var rl = require('readline');
 
@@ -37,6 +38,7 @@ input.on('end', function() {
 function generateGeofences(){
 	var geofences = [
 	                    {
+	                    	id: ObjectId(),
 	                    	name: 'geofence1',
 	                    	polygon: {
 	                    		type: 'Polygon',
@@ -50,6 +52,7 @@ function generateGeofences(){
 	                    	lastUpdateGeofenceFlag: false
 	                    },
 	                    {
+	                    	id: ObjectId(),
 	                    	name: 'geofence2',
 	                    	polygon: {
 	                    		type: 'Polygon',
@@ -64,6 +67,7 @@ function generateGeofences(){
 	                    	lastUpdateGeofenceFlag: false
 	                    },
 	                    {
+	                    	id: ObjectId(),
 	                    	name: 'geofence3',
 	                    	polygon: {
 	                    		type: 'Polygon',
