@@ -163,7 +163,8 @@ function generateData(numOfDevices,numOfUsers,numOfUpdates){
 		    					city:"city"+k,
 		    					country:"country"+k,
 		    					telMob:"0100000000"+k,
-		    					accountVerification: true
+		    					accountVerification: true,
+		    					defaultLanguage: "ar"
 		    					};
 		    			db.collection('users').insert(user, function(err, inserted) {
 		    	            if(err) throw err;
