@@ -168,7 +168,7 @@ function generateData(numOfDevices,numOfUsers,numOfUpdates){
 		    					country:"country"+k,
 		    					telMob:"0100000000"+k,
 		    					accountVerification: true,
-		    					defaultLanguage: "Arabic",
+		    					defaultLanguage: "arabic",
 		    					};
 		    			db.collection('users').insert(user, function(err, inserted) {
 		    	            if(err) throw err;
