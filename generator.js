@@ -111,13 +111,16 @@ function generateData(numOfDevices,numOfUsers,numOfUpdates){
 	    	device.totalMileage = 0.0;
 	    	device.offlineFlag = false;
 	    	device.stopDetailTimerFlag = false;
+	    	device.oilMileageThreshold = 5000;
+	    	device.tyreMileageThreshold = 6000;
+	    	device.brakeMileageThreshold = 7000;
 	    	//device.geofenceAlarmsArraySize = 0;
 	    	
 	    	for (var j = 0; j < numOfUpdates; j++) { // generate & insert a new update for that device
 	    		var update = {deviceIMEI:deviceIds[i]};
 	    		update.updateType = 'gps';
-	    		var deviceTime = new Date('2015-02-27T06:00:00.000Z'); // sets the start time of 'deviceTime' attribute in the updates collection
-	    		var serverTime = new Date('2015-02-27T08:00:00.000Z'); // sets the start time of 'serverTime' attribute in the updates collection	    		
+	    		var deviceTime = new Date('2015-05-11T06:00:00.000Z'); // sets the start time of 'deviceTime' attribute in the updates collection
+	    		var serverTime = new Date('2015-05-11T08:00:00.000Z'); // sets the start time of 'serverTime' attribute in the updates collection	    		
 	    		deviceTime.setSeconds(j*30);
 	    		serverTime.setSeconds(j*30);
 	    		update.deviceTime = deviceTime;
