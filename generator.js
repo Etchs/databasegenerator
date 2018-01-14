@@ -119,8 +119,8 @@ function generateData(numOfDevices,numOfUsers,numOfUpdates){
 	    	for (var j = 0; j < numOfUpdates; j++) { // generate & insert a new update for that device
 	    		var update = {deviceIMEI:deviceIds[i]};
 	    		update.updateType = 'gps';
-	    		var deviceTime = new Date('2015-05-11T06:00:00.000Z'); // sets the start time of 'deviceTime' attribute in the updates collection
-	    		var serverTime = new Date('2015-05-11T08:00:00.000Z'); // sets the start time of 'serverTime' attribute in the updates collection	    		
+	    		var deviceTime = new Date('2018-01-13T06:00:00.000Z'); // sets the start time of 'deviceTime' attribute in the updates collection
+	    		var serverTime = new Date('2018-01-13T08:00:00.000Z'); // sets the start time of 'serverTime' attribute in the updates collection	    		
 	    		deviceTime.setSeconds(j*30);
 	    		serverTime.setSeconds(j*30);
 	    		update.deviceTime = deviceTime;
@@ -173,9 +173,9 @@ function generateData(numOfDevices,numOfUsers,numOfUpdates){
 		    					accountVerification: true,
 		    					defaultLanguage: "arabic",
 		    					};
-		    			db.collection('users').insert(user, function(err, inserted) {
+		    			db.collection('users').insert(user, function(err, obj) {
 		    	            if(err) throw err;
-		    	            
+		    	            var inserted = obj.ops || obj;
 		    	            for (var n = 0; n < inserted[0].devices.length; n++) {
 								var deviceIMEI = inserted[0].devices[n];
 								
@@ -184,8 +184,8 @@ function generateData(numOfDevices,numOfUsers,numOfUpdates){
 		    	            	var newUser = {
     	            					'user_id': inserted[0]._id,
     	            					'userName': inserted[0].username,
-    	            					'userActivation': new Date('2014-09-10T06:00:00.000Z'),
-    	            					'userExpiration': new Date('2016-09-10T06:00:00.000Z')
+    	            					'userActivation': new Date('2018-01-13T06:00:00.000Z'),
+    	            					'userExpiration': new Date('2019-01-13T06:00:00.000Z')
     	            				};
 		    	            	var operator = {
 		    	            			'$push': {
